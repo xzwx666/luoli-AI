@@ -5,19 +5,9 @@ use tokio::sync::RwLock;
 use anyhow::{Result, Context};
 use log::{info, warn, error};
 
-use crate::config::ApiConfig;
+use crate::config::{ApiConfig, ApiEndpoint};
 use crate::security::SecurityManager;
 use crate::monitor::{ActivityMonitor, ActivityRecord, ActivityType, ActivityStatus};
-
-/// API 端点配置
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ApiEndpoint {
-    pub name: String,
-    pub url: String,
-    pub method: String,
-    pub headers: HashMap<String, String>,
-    pub timeout_secs: u64,
-}
 
 /// API 客户端
 pub struct ApiClient {

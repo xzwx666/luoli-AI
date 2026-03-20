@@ -56,7 +56,21 @@ pub struct ApiConfig {
 pub struct ApiEndpoint {
     pub name: String,
     pub url: String,
+    pub method: String,
+    #[serde(default)]
+    pub headers: std::collections::HashMap<String, String>,
+    #[serde(default = "default_timeout")]
+    pub timeout_secs: u64,
+    #[serde(default = "default_true")]
     pub enabled: bool,
+}
+
+fn default_timeout() -> u64 {
+    30
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl AppConfig {
@@ -172,4 +186,14 @@ impl Default for AppConfig {
                     McpTool {
                         name: "shell".to_string(),
                         enabled: true,
-                        config:
+                        config: serde_json::json!({}),
+                    },
+                ],
+            },
+            api: ApiConfig {
+                enabled: true,
+                endpoints: vec![],
+            },
+        }
+    }
+}
