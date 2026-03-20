@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洛璃 - 个人终端助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --accent-color: #e94560;
+            --text-primary: #eaeaea;
+            --text-secondary: #a0a0a0;
+            --success-color: #4ecca3;
+            --warning-color: #f9a825;
+            --danger-color: #e94560;
+            --border-color: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo .avatar-icon {
+            font-size: 28px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-item.active {
+            background: var(--bg-tertiary);
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .mode-indicator {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mode-badge.strict {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--danger-color);
+        }
+
+        .mode-badge.normal {
+            background: rgba(78, 204, 163, 0.2);
+            color: var(--success-color);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 顶部栏 */
+        .header {
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 15px 8px 35px;
+            color: var(--text-primary);
+            width: 300px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d63d56;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #1a4a7a;
+        }
+
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* 终端区域 */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .terminal-header {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .terminal-tab {
+            padding: 6px 15px;
+            background: var(--bg-tertiary);
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-tab.active {
+            background: var(--bg-primary);
+        }
+
+        .terminal-tab .close {
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .terminal-tab .close:hover {
+            opacity: 1;
+        }
+
+        .terminal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .terminal-actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .terminal-actions button:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .terminal-output {
+            margin-bottom: 10px;
+        }
+
+        .terminal-line {
+            padding: 2px 0;
+        }
+
+        .terminal-line.command {
+            color: var(--accent-color);
+        }
+
+        .terminal-line.output {
+            color: var(--text-primary);
+        }
+
+        .terminal-line.error {
+            color: var(--danger-color);
+        }
+
+        .terminal-line.success {
+            color: var(--success-color);
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .prompt {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+        }
+
+        /* 右侧面板 */
+        .side-panel {
+            width: 350px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .panel-tab:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .panel-tab.active {
+            border-bottom-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        /* 日志面板 */
+        .log-item {
+            padding: 10px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .log-item.success {
+            border-left-color: var(--success-color);
+        }
+
+        .log-item.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .log-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .log-command {
+            font-family: monospace;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .log-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .log-status.success {
+            background: rgba(78, 204, 163, 0.2);
+            color: var(--success-color);
+        }
+
+        .log-status.error {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* 安全面板 */
+        .security-section {
+            margin-bottom: 20px;
+        }
+
+        .security-section h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .rule-list {
+            background: var(--bg-primary);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .rule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-pattern {
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .rule-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .rule-actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .rule-actions button:hover {
+            color: var(--danger-color);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .add-rule-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .add-rule-form input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        /* 统计面板 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* 设置面板 */
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section h3 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .setting-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 开关 */
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-tertiary);
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background: var(--accent-color);
+        }
+
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* 动画 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1><span class="avatar-icon">👩‍💻</span> 洛璃</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="terminal">
+                    <i>⌨️</i> 终端
+                </div>
+                <div class="nav-item" data-page="logs">
+                    <i>📋</i> 日志
+                </div>
+                <div class="nav-item" data-page="security">
+                    <i>🔒</i> 安全
+                </div>
+                <div class="nav-item" data-page="stats">
+                    <i>📊</i> 统计
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <i>⚙️</i> 设置
+                </div>
+            </nav>
+            
+            <div class="mode-indicator">
+                <span class="mode-badge normal" id="modeBadge">
+                    <span>🛡️</span> 普通模式
+                </span>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <div class="search-box">
+                        <i>🔍</i>
+                        <input type="text" placeholder="搜索命令或日志...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-secondary" onclick="toggleMode()">
+                        <span>🔄</span> 切换模式
+                    </button>
+                    <button class="btn btn-primary" onclick="showNewTabModal()">
+                        <span>+</span> 新建终端
+                    </button>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <!-- 终端区域 -->
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-tabs">
+                            <div class="terminal-tab active">
+                                <span>Terminal 1</span>
+                                <span class="close">×</span>
+                            </div>
+                            <div class="terminal-tab">
+                                <span>Terminal 2</span>
+                                <span class="close">×</span>
+                            </div>
+                        </div>
+                        <div class="terminal-actions">
+                            <button title="清屏">🗑️</button>
+                            <button title="复制">📋</button>
+                            <button title="全屏">⛶</button>
+                        </div>
+                    </div>
+                    
+                    <div class="terminal-body" id="terminalBody">
+                        <div class="terminal-output">
+                            <div class="terminal-line">洛璃终端助手 v0.1.0</div>
+                            <div class="terminal-line">当前模式: 普通模式</div>
+                            <div class="terminal-line">输入 'help' 查看帮助</div>
+                            <div class="terminal-line"> </div>
+                        </div>
+                        
+                        <div class="terminal-input-line">
+                            <span class="prompt">luoli&gt;</span>
+                            <input type="text" class="terminal-input" id="terminalInput" autofocus>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧面板 -->
+                <aside class="side-panel">
+                    <div class="panel-tabs">
+                        <div class="panel-tab active">日志</div>
+                        <div class="panel-tab">安全</div>
+                        <div class="panel-tab">统计</div>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <!-- 日志列表 -->
+                        <div class="log-item success">
+                            <div class="log-header">
+                                <span>10:30:45</span>
+                                <span class="log-status success">成功</span>
+                            </div>
+                            <div class="log-command">ls -la</div>
+                        </div>
+                        
+                        <div class="log-item error">
+                            <div class="log-header">
+                                <span>10:28:12</span>
+                                <span class="log-status error">失败</span>
+                            </div>
+                            <div class="log-command">rm -rf /</div>
+                        </div>
+                        
+                        <div class="log-item warning">
+                            <div class="log-header">
+                                <span>10:25:33</span>
+                                <span class="log-status error">已阻止</span>
+                            </div>
+                            <div class="log-command">curl http://malicious.com</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新建终端模态框 -->
+    <div class="modal-overlay" id="newTabModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>新建终端</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>终端名称</h4>
+                        <p>为此终端会话命名</p>
+                    </div>
+                </div>
+                <input type="text" placeholder="Terminal 3" style="width: 100%; margin-top: 10px;">
+                
+                <div class="setting-item" style="margin-top: 20px;">
+                    <div class="setting-info">
+                        <h4>工作目录</h4>
+                        <p>设置终端的初始工作目录</p>
+                    </div>
+                </div>
+                <input type="text" placeholder="/home/user" style="width: 100%; margin-top: 10px;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="closeModal()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换运行模式
+        function toggleMode() {
+            const badge = document.getElementById('modeBadge');
+            if (badge.classList.contains('normal')) {
+                badge.classList.remove('normal');
+                badge.classList.add('strict');
+                badge.innerHTML = '<span>🔒</span> 严格模式';
+                addTerminalLine('系统: 已切换到严格模式', 'warning');
+            } else {
+                badge.classList.remove('strict');
+                badge.classList.add('normal');
+                badge.innerHTML = '<span>🛡️</span> 普通模式';
+                addTerminalLine('系统: 已切换到普通模式', 'success');
+            }
+        }
+
+        // 显示/关闭模态框
+        function showNewTabModal() {
+            document.getElementById('newTabModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('newTabModal').classList.remove('active');
+        }
+
+        // 添加终端输出行
+        function addTerminalLine(text, type = 'output') {
+            const output = document.querySelector('.terminal-output');
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`;
+            line.textContent = text;
+            output.appendChild(line);
+            
+            // 滚动到底部
+            const terminalBody = document.getElementById('terminalBody');
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        // 终端输入处理
+        const terminalInput = document.getElementById('terminalInput');
+        terminalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim();
+                if (command) {
+                    // 显示命令
+                    addTerminalLine(`luoli> ${command}`, 'command');
+                    
+                    // 模拟执行
+                    setTimeout(() => {
+                        if (command === 'help') {
+                            addTerminalLine('可用命令:', 'output');
+                            addTerminalLine('  help    - 显示帮助', 'output');
+                            addTerminalLine('  mode    - 查看当前模式', 'output');
+                            addTerminalLine('  clear   - 清屏', 'output');
+                            addTerminalLine('  exit    - 退出', 'output');
+                        } else if (command === 'mode') {
+                            const mode = document.getElementById('modeBadge').classList.contains('strict') ? '严格' : '普通';
+                            addTerminalLine(`当前模式: ${mode}模式`, 'output');
+                        } else if (command === 'clear') {
+                            document.querySelector('.terminal-output').innerHTML = '';
+                        } else if (command === 'exit') {
+                            addTerminalLine('再见!', 'output');
+                        } else {
+                            addTerminalLine(`执行: ${command}`, 'success');
+                            addTerminalLine('命令执行成功 (模拟)', 'output');
+                        }
+                    }, 100);
+                    
+                    this.value = '';
+                }
+            }
+        });
+
+        // 导航菜单切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 终端标签切换
+        document.querySelectorAll('.terminal-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.terminal-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 面板标签切换
+        document.querySelectorAll('.panel-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 保持输入框焦点
+        document.getElementById('terminalBody').addEventListener('click', function() {
+            document.getElementById('terminalInput').focus();
+        });
+    </script>
+</body>
+</html>
