@@ -56,7 +56,7 @@ pub enum LogStatus {
 impl TuiApp {
     pub fn new() -> Self {
         let mut terminal_history = Vec::new();
-        terminal_history.push(("info".to_string(), "🦞 洛璃终端助手 v0.1.0".to_string()));
+        terminal_history.push(("info".to_string(), "洛璃终端助手 v0.1.0".to_string()));
         terminal_history.push(("info".to_string(), "当前模式: 普通模式".to_string()));
         terminal_history.push(("info".to_string(), "输入 'help' 查看帮助".to_string()));
         terminal_history.push(("info".to_string(), "".to_string()));
@@ -264,7 +264,7 @@ fn ui(f: &mut Frame, app: &TuiApp) {
         .split(f.size());
 
     // 标题栏
-    let title = Paragraph::new("🦞 洛璃终端助手")
+    let title = Paragraph::new("👩‍💻 洛璃终端助手")
         .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
         .alignment(Alignment::Center)
         .block(Block::default().borders(Borders::ALL));

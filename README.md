@@ -1,6 +1,6 @@
 # 洛璃 (Luoli) - 个人终端助手
 
-🦞 一个安全、可控的个人终端助手，参考 OpenClaw 设计，使用 Rust 和 Python 构建。
+👩‍💻 一个安全、可控的个人终端助手，参考 OpenClaw 设计，使用 Rust 和 Python 构建。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
@@ -384,4 +384,4 @@ mypy luoli/
 
 ---
 
-**用 ❤️ 和 🦞 构建**
+**用 ❤️ 和 👩‍💻 构建**
