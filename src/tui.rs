@@ -264,7 +264,7 @@ fn ui(f: &mut Frame, app: &TuiApp) {
         .split(f.size());
 
     // 标题栏
-    let title = Paragraph::new("👩‍💻 洛璃终端助手")
+    let title = Paragraph::new("洛璃终端助手")
         .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
         .alignment(Alignment::Center)
         .block(Block::default().borders(Borders::ALL));

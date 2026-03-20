@@ -8,6 +8,7 @@ pub struct AppConfig {
     pub monitor: MonitorConfig,
     pub mcp: McpConfig,
     pub api: ApiConfig,
+    pub ai: crate::ai_config::AiConfigManager,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -83,7 +84,20 @@ impl AppConfig {
         }
         
         let content = std::fs::read_to_string(&config_path)?;
-        let config: AppConfig = toml::from_str(&content)?;
+        
+        // 尝试解析配置，如果缺少字段则使用默认值
+        let mut config: AppConfig = match toml::from_str(&content) {
+            Ok(c) => c,
+            Err(e) => {
+                println!("配置文件格式不兼容，重新创建默认配置...");
+                println!("错误: {}", e);
+                return Self::init_default();
+            }
+        };
+        
+        // 加载 AI 配置（从单独的 JSON 文件）
+        config.ai = crate::ai_config::AiConfigManager::load()?;
+        
         Ok(config)
     }
     
@@ -194,6 +208,7 @@ impl Default for AppConfig {
                 enabled: true,
                 endpoints: vec![],
             },
+            ai: crate::ai_config::AiConfigManager::new(),
         }
     }
 }

@@ -287,6 +287,7 @@ impl SecurityManager {
                 enabled: true,
                 endpoints: vec![],
             },
+            ai: crate::ai_config::AiConfigManager::new(),
         })
     }
 }
